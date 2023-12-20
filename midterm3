@@ -1,0 +1,134 @@
+.text
+    la $a0, string1
+    jal count_upper_and_lower
+    move $a0, $v0
+    move $a1, $v1
+    jal print_result
+    
+    la $a0, string2
+    jal count_upper_and_lower
+    move $a0, $v0
+    move $a1, $v1
+    jal print_result
+    
+    li $v0, 10
+    syscall
+
+    
+# Count upper and lower
+# Given the address of a C-string in $a0, this subroutine returns:
+# in $v0: the number of lower case letters in the string pointed to by $a0
+# in $v1: the number of upper case letters in the string pointed to by $a0
+#
+# In your implementation, you *must* use the subroutines is_lowercase and is_uppercase
+# You should assume a correct implementation of is_lowercase and is_uppercase.
+#
+# You must draw a stack frame.
+#
+# You must follow the MIPS-32 register conventions discussed in class.
+#
+# You must make only one pass through the string pointed to by $a0.
+#
+# You must document what you use each register for.
+#
+# $s0 - store address of $a0
+# $s1 - store number of lower case letters in the string
+# $s2 - store number of upper case letters in the string
+# $a0 - store current character to pass to is_uppercase and is_lowercase
+# $v0 - return $s1 (number of lower case letters in the string)
+# $v1 - return $s2 (number of upper case letters in the string)
+# stack frame
+# +-----+
+# +-$s2-+ 12
+# +-$s1-+ 8
+# +-$s0-+ 4
+# +-$ra-+ 0
+# +-----+
+count_upper_and_lower:
+    # Your implementation here
+    addi $sp, $sp, -16
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    
+    li $v0, 0
+    li $v1, 0
+    move $s0, $a0
+    li $s1, 0
+    li $s2, 0
+    
+loop:
+    li $v0, 0
+    lb $a0, ($s0)
+    beqz $a0, finish
+    jal is_lowercase
+    beqz $v0, notlower
+    addi $s1, $s1, 1
+notlower:
+    li $v0, 0
+    lb $a0, ($s0)
+    jal is_uppercase
+    beqz $v0, notupper
+    addi $s2, $s2, 1
+notupper:    
+    addi $s0, $s0, 1
+    j loop
+    
+finish:
+    move $v0, $s1
+    move $v1, $s2
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    lw $s2, 12($sp)
+    addi $sp, $sp, 16
+    jr $ra
+    
+# is_lowercase
+# Given an ASCII character in $a0
+# $v0 is 0 if the character in $a0 is NOT a lower case letter
+# $v0 is 1 if the character in $a0 is a lower case letter
+
+is_lowercase:
+    li $v0, 0
+    li $t0, 'a'
+    li $t1, 'z'
+    blt $a0, $t0, lcdone
+    bgt $a0, $t1, lcdone
+    li $v0, 1
+lcdone:    jr $ra
+    
+# is_uppercase
+# Given an ASCII character in $a0
+# $v0 is 0 if the character in $a0 is NOT an upper case letter
+# $v0 is 1 if the character in $a0 is an upper case letter
+is_uppercase:
+    li $v0, 0
+    li $t0, 'A'
+    li $t1, 'Z'
+    blt $a0, $t0, ucdone
+    bgt $a0, $t1, ucdone
+    li $v0, 1
+ucdone:    jr $ra
+
+# You do NOT need to look at the code for print_result
+# It is just to output the results.    
+print_result:
+    li $v0, 1
+    syscall
+    la $a0, newline
+    li $v0, 4
+    syscall
+    move $a0, $a1
+    li $v0, 1
+    syscall
+    la $a0, newline
+    li $v0, 4
+    syscall
+    jr $ra    
+
+.data
+string1:    .asciiz "abcABC"
+string2:    .asciiz "aAbBcCdd"
+newline:    .asciiz "\n"

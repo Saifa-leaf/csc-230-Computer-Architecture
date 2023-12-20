@@ -1,0 +1,27 @@
+.data 
+x: .word 3, 1, 2, 3 #word here
+
+.text
+	li $a1, 0 # sum
+	la $a0, x # point to word
+	lw $t0, 0($a0) #store current word
+	li $t1,0 #countn umber of valid words
+	add $t1, $t0, $zero
+	jal sum
+	j finish
+	
+sum:
+	beq $t1, $zero, done
+	subi $t1, $t1, 1
+	addi $a0, $a0, 4
+	lw $t0, 0($a0)
+	add $a1, $a1, $t0
+	j sum
+done:
+	jr $ra
+	
+finish:
+	li $t0,0
+	nop
+	
+
