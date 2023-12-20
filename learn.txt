@@ -1,0 +1,37 @@
+data & instruction representation
+assembly language
+isa implementation
+starting MARS
+ java -jar mars-4-point-5.java
+
+lab2
+ $zero or $0 is always null
+ $ra or $31 is return address
+ .text
+	li $8, 12
+	li $9, 0xc
+	li $10, 1234
+	li $11, 0x1234
+	li $23, -12
+ li $8, 12 (load value decimal 12 into register $8)
+  0x0000000c
+ li $23, -12 (0xfffffff4)
+
+ .data
+ result:
+	.space 4
+
+ .text
+	li $8, 12
+	li $9, -12
+	li $10, 10
+	li $11, 200
+	
+	add $15, $11, $10
+	add $14, $8, $9
+	sub $13, $8, $9
+	add $15, $11, $11
+	add $15, $15, $11
+	sw $15, result
+
+ 

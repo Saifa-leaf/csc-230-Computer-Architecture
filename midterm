@@ -1,0 +1,32 @@
+.text
+
+# $a0 - address of string
+# $a1 - letter to count
+# $v0 - number of times letter occurs in string
+	li $v0, 0
+	la $a0, stringA
+	lb $a1, compare
+	jal count
+	j finish
+	
+count:
+	lb $t0, 0($a0)
+	beq $t0, $zero, done
+	beq $t0, $a1, plus
+continue:
+	addi $a0, $a0, 1
+	j count
+plus:
+	addi $v0, $v0, 1
+	j continue
+done:
+	jr $ra
+	
+finish:
+	nop
+	
+
+.data
+stringA: .asciiz "abcabc" # string
+compare: .asciiz "a" # letter to count
+	
